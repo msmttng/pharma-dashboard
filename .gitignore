@@ -1,0 +1,7 @@
+venv/
+__pycache__/
+*.pyc
+debug/
+pharma_data.json
+dashboard.html
+.env
