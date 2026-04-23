@@ -887,61 +887,129 @@
         <p class="text-red-700 font-semibold"><i class="fa-solid fa-triangle-exclamation mr-2"></i>{{ pendingError }}</p>
       </div>
       <div v-else>
-        <div class="flex justify-between items-center mb-1 px-1">
-          <h2 class="text-lg font-bold text-orange-700 flex items-center gap-2">
-            <i class="fa-solid fa-truck-ramp-box"></i> 未納未定 (Pharma Dashboard)
-          </h2>
+        <!-- ヘッダー -->
+        <div class="flex justify-between items-center mb-3 px-1">
+          <div>
+            <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+              <i class="fa-solid fa-truck-ramp-box text-orange-500"></i> 未納・未定品一覧
+            </h2>
+            <p class="text-[11px] text-gray-400 mt-0.5">発注済みで未入荷・出荷調整中の品目</p>
+          </div>
           <div class="flex items-center gap-2">
-            <span class="text-xs font-medium bg-orange-100 text-orange-800 py-1 px-3 rounded-full">{{ pendingData.length }}件</span>
-            <button @click="loadPendingData(true)" class="text-xs text-orange-600 hover:text-orange-800 flex items-center gap-1 border border-orange-200 rounded-lg px-3 py-1.5 hover:bg-orange-50 transition-colors">
+            <span class="text-sm font-bold bg-orange-500 text-white py-1 px-3 rounded-full shadow">{{ pendingData.length }}件</span>
+            <button @click="loadPendingData(true)" class="text-xs text-orange-600 hover:text-orange-800 flex items-center gap-1 border border-orange-200 rounded-lg px-3 py-1.5 hover:bg-orange-50 transition-colors bg-white shadow-sm">
               <i class="fa-solid fa-arrows-rotate"></i> 更新
             </button>
           </div>
         </div>
-        <div class="relative mb-4 mt-3">
-          <i class="fa-solid fa-filter absolute left-3 top-1/2 -translate-y-1/2 text-gray-300 text-sm"></i>
+
+        <!-- 卸別サマリーバー -->
+        <div v-if="pendingData.length > 0" class="flex flex-wrap gap-2 mb-4">
+          <div v-for="group in groupedPendingData" :key="'sum-'+group.supplier"
+            class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border shadow-sm"
+            :class="{
+              'bg-red-50 text-red-700 border-red-200': group.supplier==='Medipal',
+              'bg-blue-50 text-blue-700 border-blue-200': group.supplier==='Alf',
+              'bg-emerald-50 text-emerald-700 border-emerald-200': group.supplier==='Collabo',
+              'bg-gray-50 text-gray-600 border-gray-200': !['Medipal','Alf','Collabo'].includes(group.supplier)
+            }">
+            <i class="fa-solid fa-truck text-[11px]"></i>
+            {{ group.supplier }}
+            <span class="ml-1 bg-white rounded-full px-1.5 py-0 font-black text-[11px] shadow-sm">{{ group.items.length }}</span>
+          </div>
+        </div>
+
+        <!-- 絞り込み -->
+        <div class="relative mb-4">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-300 text-sm"></i>
           <input v-model="pendingFilterStr" type="text" placeholder="薬品名や卸名で絞り込み..."
-            class="w-full pl-9 pr-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-orange-400 bg-white" />
+            class="w-full pl-9 pr-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-orange-400 bg-white shadow-sm" />
           <button v-if="pendingFilterStr" @click="pendingFilterStr=''" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 hover:text-red-400 transition-colors">
             <i class="fa-solid fa-xmark text-sm"></i>
           </button>
         </div>
-        
-        <div v-if="groupedPendingData.length > 0" class="grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
-          <div v-for="group in groupedPendingData" :key="group.supplier" class="flex flex-col h-full">
+
+        <!-- 品目リスト（卸別グループ） -->
+        <div v-if="groupedPendingData.length > 0" class="space-y-5">
+          <div v-for="group in groupedPendingData" :key="group.supplier">
+            <!-- 卸ヘッダー -->
             <div class="flex items-center gap-2 mb-2 px-1">
-              <span class="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full shadow-sm"
-                :class="supplierBadgeClass(group.supplier)">
-                <i class="fa-solid fa-truck text-[10px]"></i> {{ group.supplier }}
+              <div class="h-4 w-1.5 rounded-full"
+                :class="{
+                  'bg-red-500': group.supplier==='Medipal',
+                  'bg-blue-500': group.supplier==='Alf',
+                  'bg-emerald-500': group.supplier==='Collabo',
+                  'bg-gray-400': !['Medipal','Alf','Collabo'].includes(group.supplier)
+                }"></div>
+              <span class="text-sm font-black"
+                :class="{
+                  'text-red-700': group.supplier==='Medipal',
+                  'text-blue-700': group.supplier==='Alf',
+                  'text-emerald-700': group.supplier==='Collabo',
+                  'text-gray-600': !['Medipal','Alf','Collabo'].includes(group.supplier)
+                }">
+                <i class="fa-solid fa-truck mr-1 text-xs"></i>{{ group.supplier }}
               </span>
-              <span class="text-[10px] text-gray-500 font-bold bg-white px-1.5 py-0.5 rounded-full border border-gray-200">{{ group.items.length }}件</span>
+              <span class="text-[10px] font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{{ group.items.length }}品目</span>
             </div>
-            <div class="glass-card rounded-xl overflow-hidden shadow-sm flex-1">
-              <div v-for="(item,i) in group.items" :key="i" class="flex items-center justify-between px-4 py-3 border-b border-gray-100 last:border-0 hover:bg-orange-50 transition-colors fade-in" :style="'animation-delay:'+(i*0.02)+'s'">
-                <div class="flex-1 min-w-0 mr-3">
-                  <div class="font-bold text-gray-800 text-base leading-tight">{{ item['品名'] || item.name || '-' }}</div>
-                  <div class="flex items-center gap-2 mt-1.5 flex-wrap">
-                    <span v-if="item['日付']" class="inline-flex items-center gap-1 text-[10px] text-gray-500 bg-gray-50 border border-gray-200 px-1.5 py-0.5 rounded-full whitespace-nowrap">
-                      <i class="fa-regular fa-clock text-[9px]"></i> 確認: {{ formatPendingDate(item['日付']) }}
+            <!-- カードリスト -->
+            <div class="space-y-2">
+              <div v-for="(item, i) in group.items" :key="i"
+                class="flex items-stretch bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow fade-in"
+                :style="'animation-delay:'+(i*0.02)+'s'"
+                :class="{
+                  'border-l-4 border-l-red-400': group.supplier==='Medipal',
+                  'border-l-4 border-l-blue-400': group.supplier==='Alf',
+                  'border-l-4 border-l-emerald-400': group.supplier==='Collabo',
+                  'border-l-4 border-l-gray-300': !['Medipal','Alf','Collabo'].includes(group.supplier)
+                }">
+                <!-- 主要情報 -->
+                <div class="flex-1 min-w-0 px-4 py-3">
+                  <div class="font-bold text-gray-800 text-sm leading-snug">{{ item['品名'] || item.name || '-' }}</div>
+                  <div class="flex items-center flex-wrap gap-2 mt-2">
+                    <!-- ステータスバッジ（色分け） -->
+                    <span v-if="item['ステータス'] || item.status"
+                      class="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-md whitespace-nowrap"
+                      :class="{
+                        'bg-red-100 text-red-700 border border-red-200': (item['ステータス']||item.status||'').includes('停止') || (item['ステータス']||item.status||'').includes('調整'),
+                        'bg-amber-100 text-amber-700 border border-amber-200': (item['ステータス']||item.status||'').includes('未定') || (item['ステータス']||item.status||'').includes('調達'),
+                        'bg-orange-100 text-orange-700 border border-orange-200': !(item['ステータス']||item.status||'').includes('停止') && !(item['ステータス']||item.status||'').includes('調整') && !(item['ステータス']||item.status||'').includes('未定') && !(item['ステータス']||item.status||'').includes('調達')
+                      }">
+                      <i class="fa-solid fa-triangle-exclamation text-[9px]"></i>
+                      {{ item['ステータス'] || item.status }}
                     </span>
-                    <span v-if="item['ステータス'] || item.status" class="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-red-100 text-red-700 border border-red-200 whitespace-nowrap">
-                        <i class="fa-solid fa-triangle-exclamation text-[9px]"></i> {{ item['ステータス'] || item.status }}
+                    <!-- 確認日時 -->
+                    <span v-if="item['日付']" class="inline-flex items-center gap-1 text-[10px] text-gray-400 whitespace-nowrap">
+                      <i class="fa-regular fa-clock text-[9px]"></i> {{ formatPendingDate(item['日付']) }}
                     </span>
                   </div>
                 </div>
-                <div class="shrink-0 flex items-center gap-3">
-                  <div class="text-center bg-orange-50 px-3 py-1.5 rounded-lg border border-orange-100 min-w-[50px]">
-                    <div class="text-[10px] text-gray-500 font-bold mb-0.5 uppercase">数量</div>
-                    <div class="text-xl font-black text-gray-800">{{ item['数量'] || item.qty || '-' }}</div>
-                  </div>
+                <!-- 数量 -->
+                <div class="shrink-0 flex flex-col items-center justify-center px-4 py-2 min-w-[64px]"
+                  :class="{
+                    'bg-red-50': group.supplier==='Medipal',
+                    'bg-blue-50': group.supplier==='Alf',
+                    'bg-emerald-50': group.supplier==='Collabo',
+                    'bg-gray-50': !['Medipal','Alf','Collabo'].includes(group.supplier)
+                  }">
+                  <div class="text-[9px] font-bold uppercase text-gray-400 tracking-wide mb-0.5">数量</div>
+                  <div class="text-2xl font-black leading-none"
+                    :class="{
+                      'text-red-700': group.supplier==='Medipal',
+                      'text-blue-700': group.supplier==='Alf',
+                      'text-emerald-700': group.supplier==='Collabo',
+                      'text-gray-700': !['Medipal','Alf','Collabo'].includes(group.supplier)
+                    }">{{ item['数量'] || item.qty || '-' }}</div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div v-if="groupedPendingData.length === 0" class="p-8 text-center text-gray-400">
-          <i class="fa-solid fa-box-open text-3xl opacity-20 block mb-3"></i>
-          <p>未納未定のデータはありません</p>
+
+        <div v-if="groupedPendingData.length === 0" class="glass-card rounded-2xl p-10 text-center text-gray-400">
+          <i class="fa-solid fa-box-open text-4xl opacity-20 block mb-3"></i>
+          <p class="font-semibold">未納未定のデータはありません</p>
+          <p class="text-xs mt-1 text-gray-300">すべての品目が正常に入荷しています</p>
         </div>
       </div>
     </div>
