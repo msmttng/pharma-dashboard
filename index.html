@@ -1410,8 +1410,11 @@ createApp({
       if(!searchQuery.value.trim()) return;
       isLoading.value=true; errorMsg.value=''; hasSearched.value=true; lastSearchedQuery.value=searchQuery.value;
       try {
+        const hiraToKata = str => str.replace(/[\u3041-\u3096]/g, m => String.fromCharCode(m.charCodeAt(0) + 0x60));
+        const kataToHira = str => str.replace(/[\u30A1-\u30F6]/g, m => String.fromCharCode(m.charCodeAt(0) - 0x60));
+        
         const kws = searchQuery.value.trim().split(/[\s\u3000]+/).filter(k=>k).map(k=>k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'));
-        const andFilter = `and=(${kws.map(k=>`name.ilike.*${encodeURIComponent(k)}*`).join(',')})`;
+        const andFilter = `and=(${kws.map(k => `or(name.ilike.*${encodeURIComponent(hiraToKata(k))}*,name.ilike.*${encodeURIComponent(kataToHira(k))}*)`).join(',')})`;
         
         const [invRes, mhlwRes] = await Promise.all([
           fetch(`${supaUrl}/inventory?${andFilter}&select=*`, {headers: supaHeaders}),
@@ -1458,8 +1461,11 @@ createApp({
       if(!supplyQuery.value.trim()) return;
       supplyIsLoading.value=true; supplyErrorMsg.value=''; supplyHasSearched.value=true; supplyLastSearchedQuery.value=supplyQuery.value;
       try {
+        const hiraToKata = str => str.replace(/[\u3041-\u3096]/g, m => String.fromCharCode(m.charCodeAt(0) + 0x60));
+        const kataToHira = str => str.replace(/[\u30A1-\u30F6]/g, m => String.fromCharCode(m.charCodeAt(0) - 0x60));
+        
         const kws = supplyQuery.value.trim().split(/[\s\u3000]+/).filter(k=>k).map(k=>k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'));
-        const andFilter = `and=(${kws.map(k=>`name.ilike.*${encodeURIComponent(k)}*`).join(',')})`;
+        const andFilter = `and=(${kws.map(k => `or(name.ilike.*${encodeURIComponent(hiraToKata(k))}*,name.ilike.*${encodeURIComponent(kataToHira(k))}*)`).join(',')})`;
         
         const mhlwRes = await fetch(`${supaUrl}/mhlw_supply?${andFilter}&select=*`, {headers: supaHeaders});
         let primaryMhlw = await mhlwRes.json();
