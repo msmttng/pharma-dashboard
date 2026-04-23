@@ -155,7 +155,29 @@ async def fetch_medipal(page):
             if not maker and len(texts) > 1 and not texts[1].isdigit(): maker = texts[1]
             if not code and len(texts) > 2 and texts[2].isdigit(): code = texts[2]
                 
+            import re
+            from datetime import datetime, timedelta
+            today_str = datetime.now().strftime("%m/%d")
+            tomorrow_str = (datetime.now() + timedelta(days=1)).strftime("%m/%d")
+
+            row_text = row.text.replace('\n', '')
+            tds = row.select('td')
+            delivery_date = ""
+
+            if "本日" in row_text:
+                delivery_date = today_str
+            elif "明日" in row_text:
+                delivery_date = tomorrow_str
+            elif "入荷未定" in row_text or "出荷調整" in row_text:
+                delivery_date = "入荷未定"
+            elif len(tds) > 5:
+                raw = tds[5].text.replace('\xa0', ' ').strip()
+                m = re.search(r'(\d{1,2}/\d{1,2})', raw)
+                if m:
+                    delivery_date = m.group(1)
+
             item = {
+                "date": delivery_date,
                 "code": code,
                 "maker": maker,
                 "name": name,
