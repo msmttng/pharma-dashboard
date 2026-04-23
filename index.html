@@ -151,6 +151,21 @@
           :class="activeTab==='search'?'bg-indigo-600 text-white shadow':'text-gray-500 hover:bg-gray-100'">
           <i class="fa-solid fa-magnifying-glass text-base"></i><span class="text-[11px] leading-none mt-0.5">検索</span>
         </button>
+        <button @click="switchToMinusTab"
+          class="flex-1 py-2 rounded-lg text-sm font-semibold transition-all duration-200 flex flex-col items-center justify-center gap-0.5 relative"
+          :class="activeTab==='minus'?'bg-rose-700 text-white shadow':'text-gray-500 hover:bg-gray-100'">
+          <i class="fa-solid fa-circle-minus text-base"></i><span class="text-[11px] leading-none mt-0.5">マイナス</span>
+          <span v-if="minusData.length>0&&activeTab!=='minus'"
+            class="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-rose-700 text-white text-xs font-bold rounded-full flex items-center justify-center px-1">
+            {{ minusData.length>99?'99+':minusData.length }}
+          </span>
+        </button>
+        <!-- 未納未定タブ -->
+        <button @click="switchToPendingTab"
+          class="flex-1 py-2 rounded-lg text-sm font-semibold transition-all duration-200 flex flex-col items-center justify-center gap-0.5"
+          :class="activeTab==='pending'?'bg-orange-600 text-white shadow':'text-gray-500 hover:bg-gray-100'">
+          <i class="fa-solid fa-truck-ramp-box text-base"></i><span class="text-[11px] leading-none mt-0.5">未納未定</span>
+        </button>
         <button @click="activeTab='supply'"
           class="flex-1 py-2 rounded-lg text-sm font-semibold transition-all duration-200 flex flex-col items-center justify-center gap-0.5"
           :class="activeTab==='supply'?'bg-pink-600 text-white shadow':'text-gray-500 hover:bg-gray-100'">
@@ -191,26 +206,11 @@
           :class="activeTab==='history'?'bg-cyan-600 text-white shadow':'text-gray-500 hover:bg-gray-100'">
           <i class="fa-solid fa-clock-rotate-left text-base"></i><span class="text-[11px] leading-none mt-0.5">発注履歴</span>
         </button>
-        <!-- 未納未定タブ -->
-        <button @click="switchToPendingTab"
-          class="flex-1 py-2 rounded-lg text-sm font-semibold transition-all duration-200 flex flex-col items-center justify-center gap-0.5"
-          :class="activeTab==='pending'?'bg-orange-600 text-white shadow':'text-gray-500 hover:bg-gray-100'">
-          <i class="fa-solid fa-truck-ramp-box text-base"></i><span class="text-[11px] leading-none mt-0.5">未納未定</span>
-        </button>
         <!-- 納品履歴タブ -->
         <button @click="switchToReceiveTab"
           class="flex-1 py-2 rounded-lg text-sm font-semibold transition-all duration-200 flex flex-col items-center justify-center gap-0.5"
           :class="activeTab==='receive'?'bg-emerald-600 text-white shadow':'text-gray-500 hover:bg-gray-100'">
           <i class="fa-solid fa-box-open text-base"></i><span class="text-[11px] leading-none mt-0.5">納品履歴</span>
-        </button>
-        <button @click="switchToMinusTab"
-          class="flex-1 py-2 rounded-lg text-sm font-semibold transition-all duration-200 flex flex-col items-center justify-center gap-0.5 relative"
-          :class="activeTab==='minus'?'bg-rose-700 text-white shadow':'text-gray-500 hover:bg-gray-100'">
-          <i class="fa-solid fa-circle-minus text-base"></i><span class="text-[11px] leading-none mt-0.5">マイナス</span>
-          <span v-if="minusData.length>0&&activeTab!=='minus'"
-            class="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-rose-700 text-white text-xs font-bold rounded-full flex items-center justify-center px-1">
-            {{ minusData.length>99?'99+':minusData.length }}
-          </span>
         </button>
       </div>
     </div>
