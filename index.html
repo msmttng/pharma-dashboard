@@ -1411,7 +1411,7 @@ createApp({
       isLoading.value=true; errorMsg.value=''; hasSearched.value=true; lastSearchedQuery.value=searchQuery.value;
       try {
         const kws = searchQuery.value.trim().split(/[\s\u3000]+/).filter(k=>k).map(k=>k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'));
-        const andFilter = `and=(${kws.map(k=>`name.ilike.*${k}*`).join(',')})`;
+        const andFilter = `and=(${kws.map(k=>`name.ilike.*${encodeURIComponent(k)}*`).join(',')})`;
         
         const [invRes, mhlwRes] = await Promise.all([
           fetch(`${supaUrl}/inventory?${andFilter}&select=*`, {headers: supaHeaders}),
@@ -1459,7 +1459,7 @@ createApp({
       supplyIsLoading.value=true; supplyErrorMsg.value=''; supplyHasSearched.value=true; supplyLastSearchedQuery.value=supplyQuery.value;
       try {
         const kws = supplyQuery.value.trim().split(/[\s\u3000]+/).filter(k=>k).map(k=>k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'));
-        const andFilter = `and=(${kws.map(k=>`name.ilike.*${k}*`).join(',')})`;
+        const andFilter = `and=(${kws.map(k=>`name.ilike.*${encodeURIComponent(k)}*`).join(',')})`;
         
         const mhlwRes = await fetch(`${supaUrl}/mhlw_supply?${andFilter}&select=*`, {headers: supaHeaders});
         let primaryMhlw = await mhlwRes.json();
