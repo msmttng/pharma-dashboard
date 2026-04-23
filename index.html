@@ -940,9 +940,9 @@
                     <span v-if="item['ステータス'] || item.status"
                       class="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap"
                       :class="{
-                        'bg-red-100 text-red-700 border border-red-200': (item['ステータス']||item.status||'').includes('停止') || (item['ステータス']||item.status||'').includes('調整'),
+                        'bg-red-100 text-red-700 border border-red-200': (item['ステータス']||item.status||'').includes('停止') || (item['ステータス']||item.status||'').includes('調整') || (item['ステータス']||item.status||'').includes('辞退'),
                         'bg-amber-100 text-amber-700 border border-amber-200': (item['ステータス']||item.status||'').includes('未定') || (item['ステータス']||item.status||'').includes('調達'),
-                        'bg-orange-100 text-orange-700 border border-orange-200': !(item['ステータス']||item.status||'').includes('停止') && !(item['ステータス']||item.status||'').includes('調整') && !(item['ステータス']||item.status||'').includes('未定') && !(item['ステータス']||item.status||'').includes('調達')
+                        'bg-orange-100 text-orange-700 border border-orange-200': !(item['ステータス']||item.status||'').includes('停止') && !(item['ステータス']||item.status||'').includes('調整') && !(item['ステータス']||item.status||'').includes('辞退') && !(item['ステータス']||item.status||'').includes('未定') && !(item['ステータス']||item.status||'').includes('調達')
                       }">
                       <i class="fa-solid fa-triangle-exclamation text-[9px]"></i> {{ item['ステータス'] || item.status }}
                     </span>
