@@ -1735,7 +1735,7 @@ createApp({
         }, 1500);
       } else {
         // Open Order-EPI in a new tab for PC/Android.
-        window.open("https://www.order-epi.com/order/", "_blank");
+        window.open("https://www.order-epi.com/order/?mq=" + encodeURIComponent(searchKeyword), "_blank");
       }
     };
 
